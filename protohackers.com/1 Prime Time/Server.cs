@@ -6,18 +6,16 @@ namespace PrimeTime;
 
 public static class Server
 {
-
-    internal static async Task Main()
+    internal static async Task Run()
     {
+        var listener = TcpListener.Create(5003);
+        listener.Start();
+        Console.WriteLine("Server started");
+
         while (true)
         {
             try
             {
-                var listener = TcpListener.Create(5003);
-                listener.Start();
-        
-                Console.WriteLine("Server started");
-
                 var client = await listener.AcceptTcpClientAsync();
                 _ = HandleConnectionAsync(client);
             }
@@ -26,8 +24,6 @@ public static class Server
                 Console.WriteLine(e.Message);
             }
         }
-        
-        
     }
 
     private static async Task HandleConnectionAsync(TcpClient client)
@@ -51,7 +47,7 @@ public static class Server
                     dynamic request = JsonConvert.DeserializeObject(requestString)!;
 
                     if (request.method != "isPrime")
-                        await SendMalformedResponseAsync(client, stream);
+                        await SendMalformedResponseAsync(stream);
 
                     int number = Convert.ToInt32(request.number);
                     var isPrime = CheckIfPrime(number);
@@ -60,7 +56,7 @@ public static class Server
                 }
                 catch (Exception)
                 {
-                    await SendMalformedResponseAsync(client, stream);
+                    await SendMalformedResponseAsync(stream);
                 }
             }
         }
@@ -100,9 +96,8 @@ public static class Server
         Console.WriteLine("Response send: " + responseString);
     }
 
-    private static async Task SendMalformedResponseAsync(TcpClient client, Stream stream)
+    private static async Task SendMalformedResponseAsync(Stream stream)
     {
         await PrepareJson(stream, "malformed");
     }
-
 }

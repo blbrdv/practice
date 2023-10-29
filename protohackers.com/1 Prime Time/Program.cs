@@ -1,3 +1,3 @@
 ﻿using PrimeTime;
 
-await Server.Main();
+await Server.Run();
