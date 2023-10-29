@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ public static class Server
 {
     internal static async Task Run()
     {
-        var listener = TcpListener.Create(5003);
+        var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 5003);
         listener.Start();
         Console.WriteLine("Server started");
 
