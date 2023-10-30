@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1 Prime Time", "protohacker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2 Means to an End", "protohackers.com\2 Means to an End\2 Means to an End.csproj", "{11C96C71-870F-4A1C-8984-DDA3251C6C44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "protohackers.com\_Common\Common.csproj", "{3C4F1350-7863-4F67-AADF-200964AA8069}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{11C96C71-870F-4A1C-8984-DDA3251C6C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11C96C71-870F-4A1C-8984-DDA3251C6C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11C96C71-870F-4A1C-8984-DDA3251C6C44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C4F1350-7863-4F67-AADF-200964AA8069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C4F1350-7863-4F67-AADF-200964AA8069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C4F1350-7863-4F67-AADF-200964AA8069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C4F1350-7863-4F67-AADF-200964AA8069}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C09FD2E8-4AB5-4F40-8355-248E138AEA01} = {5FCCBC6D-A292-4B9C-8E39-F87FA612B88F}

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using Common;
 
 namespace MeansToAnEnd;
 
@@ -28,7 +29,9 @@ internal static class Server
     
     private static async Task HandleConnectionAsync(TcpClient client)
     {
-        Console.WriteLine("Client connected");
+        var id = Id.New();
+        
+        Console.WriteLine($"{id} | Connected |");
 
         try
         {
@@ -48,10 +51,12 @@ internal static class Server
 
                     if (type == 'I')
                     {
+                        Console.WriteLine($"{id} | Received | I {first} {second} |");
                         data.Add((first, second));
                     } 
                     else if (type == 'Q')
                     {
+                        Console.WriteLine($"{id} | Received | Q {first} {second} |");
                         var prices = data
                             .Where(price => first <= price.timestamp && price.timestamp <= second)
                             .Select(price => price.price);
@@ -59,26 +64,29 @@ internal static class Server
                         var result = prices.Any() ? Convert.ToInt32(Math.Round(prices.Average())) : 0;
                         var response = BitConverter.GetBytes(result).Reverse().ToArray();
                         
+                        Console.WriteLine($"{id} | Send | {result} |");
                         writer.Write(response);
-                        Console.WriteLine(result);
                     }
                     else
                     {
+                        Console.WriteLine($"{id} | Malformed request |");
                         break;
                     }
                 }
                 catch (EndOfStreamException)
                 {
+                    Console.WriteLine($"{id} | Disconnected |");
                     break;
                 }
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine($"{id} | Error | {e.Message} |");
         }
         finally
         {
+            Console.WriteLine($"{id} | Disconnected |");
             client.Close();
         }
     }

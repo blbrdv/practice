@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using Common;
 
 namespace SmokeTest;
 
@@ -17,14 +18,15 @@ internal static class Server
         {
             var client = await listener.AcceptTcpClientAsync();
 
-            Console.WriteLine("Client connected.");
-
             _ = HandleClientAsync(client);
         }
     }
 
     private static async Task HandleClientAsync(TcpClient client)
     {
+        var id = Id.New();
+        Console.WriteLine($"{id} | Connected |");
+        
         var stream = client.GetStream();
 
         var buffer = new byte[4096];
@@ -34,10 +36,9 @@ internal static class Server
         {
             await stream.WriteAsync(buffer.AsMemory(0, bytesRead));
         }
-
+        
+        Console.WriteLine($"{id} | Disconnected |");
         client.Close();
-
-        Console.WriteLine("Client disconnected.");
     }
     
 }

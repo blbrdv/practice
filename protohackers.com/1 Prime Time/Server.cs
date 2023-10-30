@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Common;
 using Newtonsoft.Json;
 
 namespace PrimeTime;
@@ -29,44 +30,52 @@ public static class Server
 
     private static async Task HandleConnectionAsync(TcpClient client)
     {
-        Console.WriteLine("Client connected");
+        var id = Id.New();
+        
+        Console.WriteLine($"{id} | Connected |");
 
         try
         {
             var stream = client.GetStream();
-            var buffer = new byte[1024];
+            var buffer = new byte[8192];
 
             while (client.Connected)
             {
                 var bytesRead = await stream.ReadAsync(buffer);
                 var requestString = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                Console.WriteLine("Received request: " + requestString);
+                Console.WriteLine($"{id} | Received | {requestString} |");
 
                 try
                 {
                     dynamic request = JsonConvert.DeserializeObject(requestString)!;
 
                     if (request.method != "isPrime")
-                        await SendMalformedResponseAsync(stream);
+                    {
+                        var malformed = await SendMalformedResponseAsync(stream);
+                        Console.WriteLine($"{id} | Send | {malformed} |");
+                    }
 
                     int number = Convert.ToInt32(request.number);
                     var isPrime = CheckIfPrime(number);
 
-                    await PrepareJson(stream, isPrime);
+                    var result = await PrepareJson(stream, isPrime);
+                    Console.WriteLine($"{id} | Send | {result} |");
                 }
                 catch (Exception)
                 {
-                    await SendMalformedResponseAsync(stream);
+                    var malformed = await SendMalformedResponseAsync(stream);
+                    Console.WriteLine($"{id} | Send | {malformed} |");
                 }
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine($"{id} | Error | {e.Message} |");
         }
         finally
         {
+            Console.WriteLine($"{id} | Disconnected |");
             client.Close();
         }
     }
@@ -87,18 +96,17 @@ public static class Server
         return true;   
     }
 
-    private static async Task PrepareJson(Stream stream, dynamic value)
+    private static async Task<string> PrepareJson(Stream stream, dynamic value)
     {
         dynamic response = new { method = "isPrime", prime = value };
         string responseString = JsonConvert.SerializeObject(response);
         var responseBytes = Encoding.UTF8.GetBytes(responseString + "\n");
         await stream.WriteAsync(responseBytes);
-        
-        Console.WriteLine("Response send: " + responseString);
+        return responseString;
     }
 
-    private static async Task SendMalformedResponseAsync(Stream stream)
+    private static async Task<string> SendMalformedResponseAsync(Stream stream)
     {
-        await PrepareJson(stream, "malformed");
+        return await PrepareJson(stream, "malformed");
     }
 }
