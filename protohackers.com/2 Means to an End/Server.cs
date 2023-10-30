@@ -54,7 +54,7 @@ internal static class Server
                     {
                         var prices = data
                             .Where(price => first <= price.timestamp && price.timestamp <= second)
-                            .Select(price => price);
+                            .Select(price => price.price);
                         
                         var result = prices.Any() ? Convert.ToInt32(Math.Round(prices.Average())) : 0;
                         var response = BitConverter.GetBytes(result).Reverse().ToArray();
