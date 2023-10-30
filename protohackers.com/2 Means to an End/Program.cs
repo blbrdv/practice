@@ -1,1 +1,3 @@
-﻿Console.WriteLine("Hello World!");
+﻿using MeansToAnEnd;
+
+await Server.Run();
