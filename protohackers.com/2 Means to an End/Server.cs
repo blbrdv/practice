@@ -57,11 +57,18 @@ internal static class Server
                     else if (type == 'Q')
                     {
                         Console.WriteLine($"{id} | Received | Q {first} {second} |");
-                        var prices = data
-                            .Where(price => first <= price.timestamp && price.timestamp <= second)
-                            .Select(price => price.price);
-                        
-                        var result = prices.Any() ? Convert.ToInt32(Math.Round(prices.Average())) : 0;
+
+                        int result;
+                        if (first > second) 
+                            result = 0;
+                        else
+                        {
+                            result = (int)data
+                                .Where(price => first <= price.timestamp && price.timestamp <= second)
+                                .Select(price => price.price)
+                                .DefaultIfEmpty(0)
+                                .Average();
+                        }
                         var response = BitConverter.GetBytes(result).Reverse().ToArray();
                         
                         Console.WriteLine($"{id} | Send | {result} |");
@@ -86,7 +93,6 @@ internal static class Server
         }
         finally
         {
-            Console.WriteLine($"{id} | Disconnected |");
             client.Close();
         }
     }
