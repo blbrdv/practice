@@ -1,6 +1,10 @@
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.IO.Pipelines;
+using System.Text.Json;
 using Common;
 using Newtonsoft.Json;
 
@@ -19,7 +23,7 @@ public static class Server
             try
             {
                 var client = await listener.AcceptTcpClientAsync();
-                _ = HandleConnectionAsync(client);
+                _ = Task.Run(() => HandleConnectionAsync(client));
             }
             catch (Exception e)
             {
@@ -37,36 +41,56 @@ public static class Server
         try
         {
             var stream = client.GetStream();
-            var buffer = new byte[8192];
+            var reader = PipeReader.Create(stream);
 
-            while (client.Connected)
+            var malformed = false;
+            while (!malformed)
             {
-                var bytesRead = await stream.ReadAsync(buffer);
-                var requestString = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                
+                var result = await reader.ReadAsync();
+                var buffer = result.Buffer;
 
-                Console.WriteLine($"{id} | Received | {requestString} |");
-
-                try
+                while (!malformed && TryReadLine(ref buffer, out var line))
                 {
-                    dynamic request = JsonConvert.DeserializeObject(requestString)!;
-
-                    if (request.method != "isPrime")
+                    try
                     {
-                        var malformed = await SendMalformedResponseAsync(stream);
-                        Console.WriteLine($"{id} | Send | {malformed} |");
+                        Console.WriteLine($"{id} | Received | {line} |");
+                        
+                        dynamic request = JsonConvert.DeserializeObject(line)!;
+                    
+                        if (request.method != "isPrime")
+                        {
+                            malformed = true;
+                            var malformedMsg = await SendMalformedResponseAsync(stream);
+                            Console.WriteLine($"{id} | Send | {malformedMsg} |");
+                        }
+                    
+                        int number = Convert.ToInt32(request.number);
+                        var isPrime = CheckIfPrime(number);
+                    
+                        var resultMsg = await PrepareJson(stream, isPrime);
+                        Console.WriteLine($"{id} | Send | {resultMsg} |");
                     }
-
-                    int number = Convert.ToInt32(request.number);
-                    var isPrime = CheckIfPrime(number);
-
-                    var result = await PrepareJson(stream, isPrime);
-                    Console.WriteLine($"{id} | Send | {result} |");
+                    catch (Exception)
+                    {
+                        malformed = true;
+                        var malformedMsg = await SendMalformedResponseAsync(stream);
+                        Console.WriteLine($"{id} | Send | {malformedMsg} |");
+                    }
                 }
-                catch (Exception)
+
+                reader.AdvanceTo(buffer.Start, buffer.End);
+
+                if (malformed || result.IsCompleted)
                 {
-                    var malformed = await SendMalformedResponseAsync(stream);
-                    Console.WriteLine($"{id} | Send | {malformed} |");
+                    break;
                 }
+            }
+
+            if (malformed)
+            {
+                var malformedMsg = await SendMalformedResponseAsync(stream);
+                Console.WriteLine($"{id} | Send | {malformedMsg} |");
             }
         }
         catch (Exception e)
@@ -80,16 +104,30 @@ public static class Server
         }
     }
 
+    private static bool TryReadLine(ref ReadOnlySequence<byte> buffer, out string line)
+    {
+        var position = buffer.PositionOf((byte)'\n');
+        if (position == null)
+        {
+            line = "";
+            return false;
+        }
+
+        line = Encoding.UTF8.GetString(buffer.Slice(0, position.Value));
+        buffer = buffer.Slice(buffer.GetPosition(1, position.Value));
+        return true;
+    }
+
     // https://stackoverflow.com/a/15743238
-    private static bool CheckIfPrime(int number)
+    private static bool CheckIfPrime(long number)
     {
         if (number <= 1) return false;
         if (number == 2) return true;
         if (number % 2 == 0) return false;
 
-        var boundary = (int)Math.Floor(Math.Sqrt(number));
+        var boundary = (long)Math.Floor(Math.Sqrt(number));
           
-        for (var i = 3; i <= boundary; i += 2)
+        for (var i = 3L; i <= boundary; i += 2)
             if (number % i == 0)
                 return false;
     
