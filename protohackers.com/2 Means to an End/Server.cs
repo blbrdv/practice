@@ -18,7 +18,7 @@ internal static class Server
             try
             {
                 var client = await listener.AcceptTcpClientAsync();
-                _ = HandleConnectionAsync(client);
+                _ = Task.Run(() => HandleConnectionAsync(client));
             }
             catch (Exception e)
             {
