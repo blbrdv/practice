@@ -27,7 +27,7 @@ internal static class Server
         var id = Id.New();
         Console.WriteLine($"{id} | Connected |");
         
-        var stream = client.GetStream();
+        await using var stream = client.GetStream();
 
         var buffer = new byte[4096];
         int bytesRead;

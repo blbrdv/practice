@@ -40,7 +40,7 @@ public static class Server
 
         try
         {
-            var stream = client.GetStream();
+            await using var stream = client.GetStream();
             var reader = PipeReader.Create(stream);
 
             var malformed = false;

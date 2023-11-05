@@ -38,8 +38,8 @@ internal static class Server
             var data = new List<(int timestamp, int price)>();
             
             var stream = client.GetStream();
-            var reader = new BinaryReader(stream);
-            var writer = new BinaryWriter(stream);
+            BinaryReader reader = new(stream);
+            BinaryWriter writer = new(stream);
 
             while (client.Connected)
             {
