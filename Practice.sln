@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "protohackers.com\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3 Budget Chat", "protohackers.com\3 Budget Chat\3 Budget Chat.csproj", "{DD309DE7-9886-48F5-BA0A-CAB2FAFA8026}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4 Unusual Database Program", "protohackers.com\4 Unusual Database Program\4 Unusual Database Program.csproj", "{2AFAFEA9-8047-4E5C-89B0-D832327D9546}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{DD309DE7-9886-48F5-BA0A-CAB2FAFA8026}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD309DE7-9886-48F5-BA0A-CAB2FAFA8026}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD309DE7-9886-48F5-BA0A-CAB2FAFA8026}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AFAFEA9-8047-4E5C-89B0-D832327D9546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AFAFEA9-8047-4E5C-89B0-D832327D9546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AFAFEA9-8047-4E5C-89B0-D832327D9546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AFAFEA9-8047-4E5C-89B0-D832327D9546}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C09FD2E8-4AB5-4F40-8355-248E138AEA01} = {5FCCBC6D-A292-4B9C-8E39-F87FA612B88F}
