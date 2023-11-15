@@ -58,13 +58,15 @@ public static class Server
                         
                         var settings = new JsonSerializerSettings
                         {
-                            Converters = new List<JsonConverter> { new PayloadConverter() }
+                            MissingMemberHandling = MissingMemberHandling.Ignore,
+                            Converters = { new DoubleConverter() },
+                            ContractResolver = new NonNullablePropertiesRequiredResolver()
                         };
                         var request = JsonConvert.DeserializeObject<Payload>(line, settings)!;
                         
                         if (request.Method == "isPrime")
                         {
-                            var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number!.Value));
+                            var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number));
                             Console.WriteLine($"{id} | Send | {resultMsg} |");
                         }
                         else

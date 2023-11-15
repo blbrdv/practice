@@ -8,5 +8,5 @@ public class Payload
     public string Method { get; set; }
     
     [JsonProperty("number")]
-    public double? Number { get; set; }
+    public double Number { get; set; }
 }
