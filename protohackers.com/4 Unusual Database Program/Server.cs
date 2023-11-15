@@ -7,7 +7,7 @@ namespace UnusualDatabaseProgram;
 
 internal static class Server
 {
-    private const int Port = 30001;
+    private const int Port = 5003;
     
     private static readonly Dictionary<string, string> Data = new()
     {
@@ -52,7 +52,7 @@ internal static class Server
 
             if (message.Contains("="))
             {
-                var resultMessage = Regex.Matches(message, @"^([^=]*)=(.*)$", RegexOptions.IgnoreCase);
+                var resultMessage = Regex.Matches(message, @"([^=]*)=((?>.|\n)*)", RegexOptions.IgnoreCase);
                 var key = resultMessage[0].Groups[1].Value;
                 var value = resultMessage[0].Groups[2].Value;
 
@@ -73,7 +73,7 @@ internal static class Server
         }
         catch (Exception e)
         {
-            Console.WriteLine($"{id} | Error | {e.Message} |");
+            Console.WriteLine($"{id} | Error | {e.Message} |\n| {e.StackTrace} |");
         }
     }
 }
