@@ -7,7 +7,7 @@ namespace UnusualDatabaseProgram;
 
 internal static class Server
 {
-    private const int Port = 5003;
+    private const int Port = 30001;
     
     private static readonly Dictionary<string, string> Data = new()
     {
@@ -25,7 +25,7 @@ internal static class Server
             while (true)
             {
                 var result = await listener.ReceiveAsync();
-                _ = Task.Run(() => HandleConnection(listener, result));
+                _ = HandleConnection(listener, result);
             }
         }
         catch (Exception e)
