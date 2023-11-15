@@ -7,6 +7,8 @@ namespace UnusualDatabaseProgram;
 
 internal static class Server
 {
+    private const int Port = 5003;
+    
     private static readonly Dictionary<string, string> Data = new()
     {
         { "version", "Unusual Database Program 1.0" }
@@ -14,9 +16,9 @@ internal static class Server
     
     internal static async Task Run()
     {
-        var listener = new UdpClient(5003);
+        var listener = new UdpClient(Port);
         
-        Console.WriteLine("Server started");
+        Console.WriteLine($"Server started on port {Port}");
         
         try
         {

@@ -7,13 +7,15 @@ namespace BudgetChat;
 
 internal static class Server
 {
-    private static Dictionary<string, StreamWriter> _clients = new();
+    private const int Port = 5003;
+    
+    private static readonly Dictionary<string, StreamWriter> Clients = new();
     
     internal static async Task Run()
     {
-        var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 5003);
+        var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), Port);
         listener.Start();
-        Console.WriteLine("Server started");
+        Console.WriteLine($"Server started on port {Port}");
         
         while (true)
         {
@@ -62,11 +64,11 @@ internal static class Server
                     return;
                 }
                 
-                var clientNames = _clients.Any() ? string.Join(", ", _clients.Keys) : string.Empty;
+                var clientNames = Clients.Any() ? string.Join(", ", Clients.Keys) : string.Empty;
                 await Send(writer, $"* The room contains: {clientNames}");
                 Console.WriteLine($"{id} | Room | {clientNames} |");
                 
-                _clients.Add(name, writer);
+                Clients.Add(name, writer);
                 _ = SendToAll($"* {name} has entered the room", name);
             }
             catch (Exception e)
@@ -117,10 +119,10 @@ internal static class Server
 
     private static async Task SendToAll(string message, string except)
     {
-        if (!_clients.Any())
+        if (!Clients.Any())
             return;
         
-        var recipients = _clients.Where(client => client.Key != except);
+        var recipients = Clients.Where(client => client.Key != except);
         var writers = recipients.Select(client => client.Value);
         foreach (var writer in writers)
             await Send(writer, message);
@@ -129,6 +131,6 @@ internal static class Server
     private static void DisconnectClient(string name)
     {
         _ = SendToAll($"* {name} has left the room", name);
-        _clients.Remove(name);
+        Clients.Remove(name);
     }
 }

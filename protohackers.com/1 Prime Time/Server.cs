@@ -12,11 +12,13 @@ namespace PrimeTime;
 
 public static class Server
 {
+    private const int Port = 5003;
+    
     internal static async Task Run()
     {
         var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 5003);
         listener.Start();
-        Console.WriteLine("Server started");
+        Console.WriteLine($"Server started on port {Port}");
 
         while (true)
         {
