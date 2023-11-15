@@ -74,11 +74,15 @@ public static class Server
                             Console.WriteLine($"{id} | Send | {malformedMsg} |");
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         malformed = true;
                         var malformedMsg = await SendMalformedResponse(stream);
                         Console.WriteLine($"{id} | Send | {malformedMsg} |");
+                        
+                        // Console.WriteLine($"{id} | Error | {e.Message} |");
+                        // if (e.StackTrace != null)
+                        //     Console.WriteLine(e.StackTrace);
                     }
                 }
 

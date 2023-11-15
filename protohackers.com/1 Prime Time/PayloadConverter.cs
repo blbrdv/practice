@@ -35,8 +35,6 @@ public class PayloadConverter : JsonConverter<Payload>
                         
                         payload.Number = num;
                         break;
-                    default:
-                        throw new JsonSerializationException($"Unexpected property: {propertyName}");
                 }
             }
             else if (reader.TokenType == JsonToken.EndObject)
