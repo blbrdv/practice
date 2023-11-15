@@ -66,7 +66,7 @@ public static class Server
                         
                         if (request.Method == "isPrime")
                         {
-                            var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number));
+                            var resultMsg = await SendResponse(stream, CheckIfPrime((int)request.Number));
                             Console.WriteLine($"{id} | Send | {resultMsg} |");
                         }
                         else
@@ -76,15 +76,11 @@ public static class Server
                             Console.WriteLine($"{id} | Send | {malformedMsg} |");
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         malformed = true;
                         var malformedMsg = await SendMalformedResponse(stream);
                         Console.WriteLine($"{id} | Send | {malformedMsg} |");
-                        
-                        // Console.WriteLine($"{id} | Error | {e.Message} |");
-                        // if (e.StackTrace != null)
-                        //     Console.WriteLine(e.StackTrace);
                     }
                 }
 
@@ -130,15 +126,15 @@ public static class Server
     }
 
     // https://stackoverflow.com/a/15743238
-    private static bool CheckIfPrime(double number)
+    private static bool CheckIfPrime(int number)
     {
         if (number <= 1) return false;
         if (number == 2) return true;
         if (number % 2 == 0) return false;
 
-        var boundary = Math.Floor(Math.Sqrt(number));
+        var boundary = (int)Math.Floor(Math.Sqrt(number));
           
-        for (var i = 3L; i <= boundary; i += 2)
+        for (var i = 3; i <= boundary; i += 2)
             if (number % i == 0)
                 return false;
     
