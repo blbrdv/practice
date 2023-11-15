@@ -28,7 +28,7 @@ internal static class Server
         }
     }
     
-    private static async Task HandleConnectionAsync(TcpClient client)
+    private static Task HandleConnectionAsync(TcpClient client)
     {
         var id = Id.New();
         
@@ -98,5 +98,7 @@ internal static class Server
         {
             client.Close();
         }
+
+        return Task.CompletedTask;
     }
 }
