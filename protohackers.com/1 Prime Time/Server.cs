@@ -62,15 +62,17 @@ public static class Server
                         };
                         var request = JsonConvert.DeserializeObject<Payload>(line, settings)!;
                         
-                        if (request.Method != "isPrime")
+                        if (request.Method == "isPrime")
+                        {
+                            var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number!.Value));
+                            Console.WriteLine($"{id} | Send | {resultMsg} |");
+                        }
+                        else
                         {
                             malformed = true;
                             var malformedMsg = await SendMalformedResponse(stream);
                             Console.WriteLine($"{id} | Send | {malformedMsg} |");
                         }
-                        
-                        var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number!.Value));
-                        Console.WriteLine($"{id} | Send | {resultMsg} |");
                     }
                     catch (Exception)
                     {
@@ -122,13 +124,13 @@ public static class Server
     }
 
     // https://stackoverflow.com/a/15743238
-    private static bool CheckIfPrime(long number)
+    private static bool CheckIfPrime(double number)
     {
         if (number <= 1) return false;
         if (number == 2) return true;
         if (number % 2 == 0) return false;
 
-        var boundary = (long)Math.Floor(Math.Sqrt(number));
+        var boundary = Math.Floor(Math.Sqrt(number));
           
         for (var i = 3L; i <= boundary; i += 2)
             if (number % i == 0)

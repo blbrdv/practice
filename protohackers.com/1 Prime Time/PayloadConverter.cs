@@ -1,12 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Numerics;
+using Newtonsoft.Json;
 
 namespace PrimeTime;
 
 public class PayloadConverter : JsonConverter<Payload>
 {
-    public override Payload ReadJson(JsonReader reader, Type objectType, Payload existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override Payload ReadJson(
+        JsonReader reader, Type objectType, Payload existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        dynamic payload = new Payload();
+        var payload = new Payload();
         while (reader.Read())
         {
             if (reader.TokenType == JsonToken.PropertyName)
@@ -23,15 +25,15 @@ public class PayloadConverter : JsonConverter<Payload>
                         {
                             throw new JsonSerializationException("Number cannot be bool");
                         }
-                        
-                        if (reader.Value is long longValue)
+                        if (reader.Value is string)
                         {
-                            payload.Number = longValue;
+                            throw new JsonSerializationException("Number cannot be string");
                         }
-                        else
-                        {
+
+                        if (!double.TryParse(reader.Value.ToString(), out var num))
                             throw new JsonSerializationException($"Unexpected value for 'number': {reader.Value}");
-                        }
+                        
+                        payload.Number = num;
                         break;
                     default:
                         throw new JsonSerializationException($"Unexpected property: {propertyName}");
@@ -49,6 +51,10 @@ public class PayloadConverter : JsonConverter<Payload>
         if (payload.Number == null)
         {
             throw new JsonSerializationException("Missing or invalid 'number' property");
+        }
+        if (reader.TokenType != JsonToken.EndObject)
+        {
+            throw new JsonSerializationException("Incomplete JSON input");
         }
         return payload;
     }
