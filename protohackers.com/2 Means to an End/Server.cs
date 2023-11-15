@@ -6,12 +6,13 @@ namespace MeansToAnEnd;
 
 internal static class Server
 {
+    private const int Port = 5003;
 
     internal static async Task Run()
     {
-        var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 5003);
+        var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), Port);
         listener.Start();
-        Console.WriteLine("Server started");
+        Console.WriteLine($"\"Means to an End\" server started on port {Port}");
 
         while (true)
         {
@@ -90,6 +91,8 @@ internal static class Server
         catch (Exception e)
         {
             Console.WriteLine($"{id} | Error | {e.Message} |");
+            if (e.StackTrace != null)
+                Console.WriteLine(e.StackTrace);
         }
         finally
         {

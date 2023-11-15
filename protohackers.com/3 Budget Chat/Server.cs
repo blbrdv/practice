@@ -15,7 +15,7 @@ internal static class Server
     {
         var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), Port);
         listener.Start();
-        Console.WriteLine($"Server started on port {Port}");
+        Console.WriteLine($"\"Budget Chat\" server started on port {Port}");
         
         while (true)
         {

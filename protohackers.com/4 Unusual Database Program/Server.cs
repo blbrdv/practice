@@ -18,7 +18,7 @@ internal static class Server
     {
         var listener = new UdpClient(Port);
         
-        Console.WriteLine($"Server started on port {Port}");
+        Console.WriteLine($"\"Unusual Database Program\" server started on port {Port}");
         
         try
         {
@@ -73,7 +73,9 @@ internal static class Server
         }
         catch (Exception e)
         {
-            Console.WriteLine($"{id} | Error | {e.Message} |\n| {e.StackTrace} |");
+            Console.WriteLine($"{id} | Error | {e.Message} |");
+            if (e.StackTrace != null)
+                Console.WriteLine(e.StackTrace);
         }
     }
 }

@@ -1,10 +1,8 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.IO.Pipelines;
-using System.Text.Json;
 using Common;
 using Newtonsoft.Json;
 
@@ -18,7 +16,7 @@ public static class Server
     {
         var listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 5003);
         listener.Start();
-        Console.WriteLine($"Server started on port {Port}");
+        Console.WriteLine($"\"Prime Time\" server started on port {Port}");
 
         while (true)
         {
@@ -98,6 +96,8 @@ public static class Server
         catch (Exception e)
         {
             Console.WriteLine($"{id} | Error | {e.Message} |");
+            if (e.StackTrace != null)
+                Console.WriteLine(e.StackTrace);
         }
         finally
         {
