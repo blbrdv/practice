@@ -56,25 +56,26 @@ public static class Server
                     {
                         Console.WriteLine($"{id} | Received | {line} |");
                         
-                        dynamic request = JsonConvert.DeserializeObject(line)!;
-                    
-                        if (request.method != "isPrime")
+                        var settings = new JsonSerializerSettings
+                        {
+                            Converters = new List<JsonConverter> { new PayloadConverter() }
+                        };
+                        var request = JsonConvert.DeserializeObject<Payload>(line, settings)!;
+                        
+                        if (request.Method != "isPrime")
                         {
                             malformed = true;
-                            var malformedMsg = await SendMalformedResponseAsync(stream);
+                            var malformedMsg = await SendMalformedResponse(stream);
                             Console.WriteLine($"{id} | Send | {malformedMsg} |");
                         }
-                    
-                        int number = Convert.ToInt32(request.number);
-                        var isPrime = CheckIfPrime(number);
-                    
-                        var resultMsg = await PrepareJson(stream, isPrime);
+                        
+                        var resultMsg = await SendResponse(stream, CheckIfPrime(request.Number!.Value));
                         Console.WriteLine($"{id} | Send | {resultMsg} |");
                     }
                     catch (Exception)
                     {
                         malformed = true;
-                        var malformedMsg = await SendMalformedResponseAsync(stream);
+                        var malformedMsg = await SendMalformedResponse(stream);
                         Console.WriteLine($"{id} | Send | {malformedMsg} |");
                     }
                 }
@@ -89,7 +90,7 @@ public static class Server
 
             if (malformed)
             {
-                var malformedMsg = await SendMalformedResponseAsync(stream);
+                var malformedMsg = await SendMalformedResponse(stream);
                 Console.WriteLine($"{id} | Send | {malformedMsg} |");
             }
         }
@@ -136,17 +137,21 @@ public static class Server
         return true;   
     }
 
-    private static async Task<string> PrepareJson(Stream stream, dynamic value)
+    private static async Task<string> SendResponse(Stream stream, bool value)
+    { 
+        return await SendJson(stream, new { method = "isPrime", prime = value });
+    }
+
+    private static async Task<string> SendMalformedResponse(Stream stream)
     {
-        dynamic response = new { method = "isPrime", prime = value };
+        return await SendJson(stream, new { malformed = true });
+    }
+
+    private static async Task<string> SendJson(Stream stream, dynamic response)
+    {
         string responseString = JsonConvert.SerializeObject(response);
         var responseBytes = Encoding.UTF8.GetBytes(responseString + "\n");
         await stream.WriteAsync(responseBytes);
         return responseString;
-    }
-
-    private static async Task<string> SendMalformedResponseAsync(Stream stream)
-    {
-        return await PrepareJson(stream, "malformed");
     }
 }
