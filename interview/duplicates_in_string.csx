@@ -1,6 +1,4 @@
-﻿
-
-public static class CheckForDuplicates 
+﻿public static class CheckForDuplicates 
 {
     public static bool HasDuplicates(string str) 
     {
